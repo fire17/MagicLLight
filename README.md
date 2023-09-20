@@ -1,4 +1,9 @@
-		[[floating_ring_transparent.gif]](Link to site - embed test & download )
+<p align="center">
+  <a href="https://www.terminalizer.com">
+    <img src="ezgif-2-e085578e27.gif?raw=true" width="200"/>
+  </a>
+</p>
+
 #  ✨ MagicLLight (MLL) <br> <p>_______give life to your models</p>	 
 ### Features: 
 * Live Interaction on your Desktop,
