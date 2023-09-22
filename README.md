@@ -1,10 +1,11 @@
 <p align="center">
-  <a href="https://www.terminalizer.com">
-    <img src="ezgif-2-e085578e27.gif?raw=true" width="200"/>
-  </a>
-</p>
+  <aa href="https://www.magicllight.com">
+    <img src="magicllight.png?raw=true" width="90%"/>
+  </a></p>
 
-#  ✨ MagicLLight (MLL) <br> <p>_______give life to your models</p>	 
+#  <pre>✨ MagicLLight (MLL) <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Experience the Future<p align="center">🞉</a></p></pre>
+##### (Landing Soon)
+#### Works with: ✰ Ruby.ai <> @ openai <> ● open-interpreter <> 火 Akyeo <> 🧠 Claude2 <> 🦜 Langchain <> 🎙 ElevenLabs
 ### Features: 
 * Live Interaction on your Desktop,
 * Realtime Voice to Voice **in Any Language!**
@@ -13,8 +14,6 @@
 * Works on any webpage (using extension)
 * Whatsapp & Telegram Support
 * Awesome on Mobile 
-
-#### Works with: ✰ Ruby.ai <> @ openai <> ● open-interpreter <> 火 Akyeo <> 🧠 Claude2 <> 🦜 Langchain <> 🎙 ElevenLabs
 
 	will soon support:
 	litellm (anyllm) <> atomai <> EmployeeGPT
@@ -66,4 +65,10 @@ Visit & Rate our *Idea Board* (signin with github)
 						 You're welcome to join community chat and put gh prs in our inbox. we'll keep our eyes out 
 
 
-##### Powered by ✨ MagicLLight
+<p align="center">
+  <a href="https://www.wholesomegarden.com">
+    <img src="ezgif-2-e085578e27.gif?raw=true" width="200"/>
+  </a>
+<br><bold>Be Powered by ✨ MagicLLight</bold>
+
+</p>
