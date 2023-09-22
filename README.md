@@ -12,11 +12,11 @@
 * Easy As Pie - Custom Embed AI
 	* for your own website
 * Works on any webpage (using extension)
-* Whatsapp & Telegram Support
+* **Whatsapp & Telegram Sync**
 * Awesome on Mobile 
 
 	will soon support:
-	litellm (anyllm) <> atomai <> EmployeeGPT
+	litellm (any llm) <> atomai <> EmployeeGPT
 
 
 ## Magically Sync With your Life
@@ -59,10 +59,12 @@
 ### Showcasing:
 * If you made a cool feature [click here] to apply for showcase
 * If you have a cool idea [click here]
-* 
-Visit & Rate our *Idea Board* (signin with github)
-*Discord* : [link] Status: Currently not engaging to let us focus on building, free from distractions,
-						 You're welcome to join community chat and put gh prs in our inbox. we'll keep our eyes out 
+* More projects coming soon
+
+Visit & Rate our *Idea Board* (signin with github)<br>
+*Discord* : [link] <br>
+*Status* : Currently not engaging to let us focus on building, free from distractions,<br>
+ &nbsp;&nbsp;  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;You're welcome to join community chat and put gh prs in our inbox. we'll keep our eyes out 
 
 
 <p align="center">
