@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Ring Fire</title>
+	<link rel="stylesheet" href="node_modules/xterm/css/xterm.css" />
+	<script src="node_modules/xterm/lib/xterm.js"></script>
+	
+	
+	
+
+	
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            overflow: hidden; /* Disable scrollbars */
+        }
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: transparent;
+        }
+        .circle-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .circle {
+			  z-index: 9999;
+
+            position: absolute; /* Change position to absolute */
+            width: 200px;
+            height: 200px;
+            filter: url(#wavy);
+            /*cursor: grab;  Make the circle draggable */
+			/*transition: filter 0.5s ease, width 0.5s ease, height 0.5s ease; */
+        }
+		
+        .circle::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            right: 40px;
+            bottom: 40px;
+            border: 10px solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #fff, inset 0 0 20px #fff;
+            animation: anima 2s linear infinite, glow 17s linear infinite;
+        }
+        @keyframes anima {
+            0% {
+                box-shadow: 0 0 20px #fff, inset 0 0 20px #fff;
+            }
+            20% {
+                box-shadow: 0 0 20px #fff, inset 0 0 20px #fff;
+            }
+        }
+        @keyframes glow {
+            0%, 100% {
+                border-color: #fff;
+                box-shadow: 0 0 20px #fff, inset 0 0 20px #fff;
+                filter: hue-rotate(0deg);
+            }
+            50% {
+                border-color: #ff0000; 
+                box-shadow: 0 0 30px #ff0000, inset 0 0 30px #ff0000;
+                filter: hue-rotate(360deg);
+            }
+        }
+        svg {
+            width: 0;
+            height: 0;
+        }
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        label {
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        input[type="range"] {
+            width: 200px;
+            margin: 5px;
+        }
+		
+		
+		.text-container {
+		  position: absolute;
+		  border-radius: 20px;
+		  opacity: 0.8;
+			transition: opacity 0.2s;
+			  width: fit-content;
+
+			/*max-height: 400px;
+			overflow: hidden; 	  */
+		}
+		.pre {
+			padding-top:10px;
+			padding-bottom:10px;
+			opacity:100;
+		}
+		.text-container11 {
+		padding-top:13px;
+		padding-bottom:10px;
+
+			position: relative;
+		  border-radius: 20px;
+		  opacity: .98;
+			transition: opacity 0.2s;
+			  width: fit-content;
+			height:fit-content;
+			  
+		}
+		
+		.text-container.dragging {
+		  cursor: grabbing; 
+			opacity: 0.3; 
+			
+		}
+		.text-container.focused {
+        opacity: 0.5;
+    }
+	.powered{ font-size: 11px; opacity:100 ; font-weight: bold; padding-left:30px;padding-right:20px;padding-bottom:10px; color: #aaa;}
+
+		/* Copy box styles */
+		.copy-box {
+		  border-radius: 25px;
+		  font-weight: bold;
+		font-size: 24px;
+		width: auto;
+		height: 100%;
+		
+		min-width: 200px;
+		max-width: 700px;
+		  background: #111;
+		  color: #fff;
+		  padding: 5px;
+		  padding-left:20px;
+		  padding-right:20px;
+		  font-family: sans-serif;
+		  display: inline-block;
+		  margin: 0 auto;
+		  transition: background 0.2s; /* Add a smooth transition effect */
+		}
+		.copy-box11 {
+		
+		  border-radius: 25px;
+		  font-weight: bold;
+		font-size: 24px;
+		width: auto;
+		height: 100%;
+		min-width: 200px;
+		max-width: 700px;
+		  background: #111;
+		  color: #fff;
+		  padding: 0px;
+		  padding-left:10px;
+		  padding-right:20px;
+		  font-family: sans-serif;
+		  display: inline-block;
+		  margin: 0 auto;
+		  transition: background 0.2s; /* Add a smooth transition effect */
+    
+
+		}
+		.copy-box11 .line11
+		{
+			position: absolute;
+			  bottom: 20px;
+			  top: 20px;
+		  background-color: aqua;
+		  box-shadow: 0px 0px 12px aqua;
+		  width: 4px;
+		  border-radius: 50%;
+		  left : 10px;
+		  
+		}
+		.copy-box:hover {
+        background: #000; /* Change to the desired hover color */
+    }
+		/*.focused {
+			background: purple; 
+		}*/
+		
+		
+		.copy-box .line2
+		{
+		  position: absolute;
+		  background-color: aqua;
+		  box-shadow: 0px 0px 12px aqua;
+		  width: 4px;
+		  height: calc(100% - 20px);
+		  top: 10px;
+		  right: 22px;
+		  border-radius: 50%;
+		  overflow: hidden;
+		}
+		.copy-box .line
+		{
+		  position: absolute;
+		  background-color: aqua;
+		  box-shadow: 0px 0px 12px aqua;
+		  width: 4px;
+		  height: calc(100% - 20px);
+		  top: 10px;
+		  bottom: 10px;
+		  left: 22px;
+		  border-radius: 50%;
+		  overflow: hidden;
+		}
+		.copy-box .line2 .scanner2 
+		{
+		  position: absolute;
+		  top: 0;
+		  right: 0;
+		  background: white;
+		  width: 100%;
+		  height: 18px;
+		  border-radius: 50%;
+		  animation: scanner-loop 3s ease-in-out infinite;
+		}
+		.copy-box .line .scanner 
+		{
+		  position: absolute;
+		  top: 0;
+		  left: 0;
+		  background: white;
+		  width: 100%;
+		  height: 18px;
+		  opacity: 90%;
+		  border-radius: 50%;
+		  animation: scanner-loop 3.2s ease-in-out infinite;
+		  transition: background-color 0.1s, box-shadow 0.1s;
+		}
+		.copy-box .line11 .scanner111
+		{
+		  position: absolute;
+		  left: 0px;
+		  background: white;
+		  width: 100%;
+		  height: 18px;
+		  border-radius: 50%;
+		  animation: scanner-loop 3s ease-in-out infinite;
+		  transition: background-color 0.1s, box-shadow 0.1s;
+		}
+		@keyframes scanner-loop
+		{
+		  0% 
+		  {
+			top: 0;
+		  }
+		  50%
+		  {
+			top: 93%;
+		  }
+		  100%
+		  {
+			top: 0;
+		  }
+		}
+		.copy-box .inner 
+		{
+		  padding: 20px;
+		}
+		.copy-box11 .inner11 
+		{
+		  padding: 20px;
+		  height: fit-content;
+		}
+		
+		.copy-box.two .line
+		{
+		  border-radius: 0;
+		  width: 2px;
+		}
+		.copy-box.two .line .scanner
+		{
+		  background: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+		  height: 50%;
+		}
+		[contenteditable] {
+		  outline: 0px solid transparent;
+		  spellcheck: false; 
+		}
+		/* Button styles */
+		#dir-toggle {
+		  padding: 5px 10px;
+		  border-radius: 4px;
+		  background: #007bff;
+		  color: #fff;
+		  border: none;
+		  cursor: pointer;
+		}
+
+		/* RTL styles */ 
+		.inner-text[dir="rtl"] {
+		  direction: rtl;
+		}
+    </style>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+	<script>
+	
+	const socket = io.connect("http://127.0.0.1:5000"); // Connect to the Socket.IO server
+	let textIndex = [0];
+		let textData = [""];
+		
+		
+    let textWindows = [];
+    let activeTextWindowIndex = -1;
+	
+	let lastSpeaker = ""
+	let currentUserWindow;
+	let currentAIWindow;
+
+	
+function updateActiveLine() {
+  textWindows.forEach((window, index) => {
+    const line = window.querySelector('.scanner');
+    if(index === activeTextWindowIndex) {
+		
+      line.style.backgroundColor = ''; 
+	  line.style.boxShadow = ''; 
+    } else {
+	let color = "transparent"
+      line.style.backgroundColor = `${color}`;
+	  line.style.boxShadow = `fff fff 20px ${color}`;
+	}
+  });
+ }
+ 
+window.onblur = () => {
+console.log("BBBBBBBBBBBBBBBBBBBBBBBLURRRRRRRRRRRRRR")
+  if(!isDragging) {
+    //activeTextWindowIndex = -1;
+	
+	updateActiveLine(); 
+	console.log("BBBBBBBBBBBBBBBBBBBBBBBLURRRRRRRRRRRRRR")
+
+  } 
+}
+document.addEventListener('blur', () => {
+  if(!isDragging) {
+    //activeTextWindowIndex = -1;
+    updateActiveLine(); 
+	console.log("BBBBBBBBBBBBBBBBBBBBBBBLURRRRRRRRRRRRRR")
+  }
+});
+  
+    function createTextWindow() {
+	
+	
+		 // Create container 
+    const textContainer = document.createElement('div');
+    textContainer.classList.add('text-container');
+
+    // Create copy box
+    const textBox = document.createElement('div');
+    textBox.classList.add('copy-box');
+    textContainer.appendChild(textBox);
+	textContainer.style.opacity = 0;
+
+	let index = textWindows.length
+    // Create inner elements
+    const line = document.createElement('div');
+    line.classList.add('line');
+    line.classList.add('right');
+
+    const scanner = document.createElement('div');
+    scanner.classList.add('scanner');
+    line.appendChild(scanner);
+	
+	const line2 = document.createElement('div');
+    line2.classList.add('line2');
+    line2.classList.add('left');
+	line2.hidden = true
+
+    const scanner2 = document.createElement('div');
+    scanner2.classList.add('scanner2');
+    line2.appendChild(scanner2);
+
+    const inner = document.createElement('div');
+    inner.classList.add('inner');
+    textBox.appendChild(inner);
+	
+	//font-size: 24px;
+	
+    const power = document.createElement('div');
+	power.classList.add('powered');
+	const pp = document.createElement('p');
+    pp.type = "text"
+	power.hidden = true
+	pp.innerHTML = "powered by ✨ MagicLLight"
+	power.appendChild(pp)
+	textBox.appendChild(power)
+	
+
+    const innerText = document.createElement('p');
+    innerText.classList.add('inner-text');
+    innerText.contentEditable = true;
+	innerText.type = 'text';
+	
+	inner.appendChild(line)
+    inner.appendChild(innerText);
+	inner.appendChild(line2)
+	
+	textContainer.focus();
+	
+	// Auto focus
+	  //innerText.focus();
+	  
+      let isDragging = false;
+      let offsetX, offsetY;
+	let textIsSelecting = false;
+
+	
+	  
+	innerText.addEventListener('focus', () => {
+		activeTextWindowIndex = index;
+		updateActiveLine();
+	  });
+	  
+	innerText.addEventListener('mousedown', () => {
+		textIsSelecting = true;
+	  });  
+	innerText.addEventListener('mouseup', () => {
+		textIsSelecting = false;
+	  });
+  
+		//###
+      textContainer.addEventListener('mousedown', e => {
+        isDragging = true;
+		activeTextWindowIndex = index;
+		updateActiveLine();
+        offsetX = e.clientX - textContainer.getBoundingClientRect().left;
+        offsetY = e.clientY - textContainer.getBoundingClientRect().top;
+        textContainer.classList.add('dragging');
+      });
+	  
+	  textContainer.addEventListener('keydown', () => {
+		console.log("keydown")
+	  textContainer.focus();
+	});
+
+      document.addEventListener('mousemove', e => {
+        if (isDragging &! textIsSelecting) {
+          const x = e.clientX - offsetX;
+          const y = e.clientY - offsetY;
+          textContainer.style.left = `${x}px`;
+          textContainer.style.top = `${y}px`;
+          textContainer.style.opacity = 0.3; 
+        }
+      });
+
+      textContainer.addEventListener('mouseup', () => {
+        isDragging = false;
+		textIsSelecting = false;
+
+        textContainer.classList.remove('dragging');
+        textContainer.style.opacity = 0.8;
+      });
+	  
+	  document.addEventListener('mouseup', () => {
+        isDragging = false;
+		textIsSelecting = false;
+
+        textContainer.classList.remove('dragging');
+        textContainer.style.opacity = 0.8;
+      });
+
+      textWindows.push(textContainer);
+      document.getElementById('text-containers').appendChild(textContainer);
+		
+	activeTextWindowIndex = textWindows.length - 1; 
+	textIndex.push(0)
+	textData.push("")
+	
+		  // Fade in
+	  setTimeout(() => {
+		textContainer.style.opacity = 0.8;
+	  }, 100); 
+	
+      return textWindows.length - 1; 
+    }
+
+    function removeTextWindow(index) {
+      //textWindows[index].remove();
+      textWindows.splice(index, 1);
+	  const window = textWindows[index];
+
+	  window.style.opacity = 0; // Fade out
+
+	  setTimeout(() => {
+		window.remove(); // Remove after fade out animation
+	  }, 500);
+	  
+      if (index === activeTextWindowIndex) {
+        activeTextWindowIndex = 0;  
+		activeTextWindowIndex = -1;  
+		// go to last active
+      }
+    }
+
+    function clearText(windowIndex) {
+	console.log("cleeearrrrr000000000000",windowIndex)
+      const targetWindow = windowIndex !== undefined
+        ? textWindows[windowIndex]
+        : textWindows[activeTextWindowIndex];
+	
+	console.log("cleeearrrrr000000000000",windowIndex)
+	
+      if (targetWindow) {		
+		
+        let target = targetWindow.querySelector('.inner-text');
+		console.log("clearing11111111!!!!!!!!!",windowIndex)
+		target.textContent = '';
+		textIndex[windowIndex] = 0;
+		textData[windowIndex] = "";
+		target.innerHTML="";
+		
+      }
+    }
+
+    // Socket.IO event handlers
+	
+	socket.on('prepWindow', () => {
+		console.log("PREPING")
+		if (activeTextWindowIndex == -1){
+		createTextWindow();
+		} else{
+		  let win = textWindows[activeTextWindowIndex]
+		  console.log("### ",activeTextWindowIndex, win.querySelector('.inner-text').innerHTML.length)
+		  if (win.querySelector('.inner-text').innerHTML.length !== 0  )
+			{changeTextWindow("\n\n... ",activeTextWindowIndex)}
+		  }
+    });
+	
+    socket.on('openTextWindow', () => {
+      createTextWindow();
+    });
+
+    socket.on('closeTextWindow', index => {
+      removeTextWindow(index);
+    });
+
+    socket.on('moveToTextWindow', (index, x, y) => {
+      const window = textWindows[index];
+      window.style.left = `${x}px`;
+      window.style.top = `${y}px`;
+    });
+//	socket.on('changeText', (newText, clear) => {
+//			// Set the received text in the textbox
+//			//textElement.textContent = newText;
+//			if (clear===true){
+//				clearText()
+//			}
+//			
+//			///const formattedText = convertTextToHtml(newText);
+//			///textElement.innerHTML = formattedText;
+//			//var lines = newText.split('\n');
+//		  
+//			// Type out each line
+//			  appendText(newText);
+//			});
+function appendText(text, textElement, index) {
+		console.log("ttt", text, index)
+		index = index !== undefined
+        ? index
+        : activeTextWindowIndex;
+		
+		textData[index] += text
+	
+	if (textData[index].length > textIndex[index]) {
+		//console.log("TTTTT "+textData, textIndex)
+        function typeNextCharX() {
+		if (textData[index].length > textIndex[index]){
+		  //console.log("xxx "+textData.length, textIndex)
+			
+			textElement.innerHTML += textData[index].charAt(textIndex[index]).replace(/\n/g, '<br>');; 
+            textIndex[index]++;
+            setTimeout(typeNextCharX, 50);
+          }
+          else {
+		  console.log("xxx "+textData[index].length, textIndex[index])
+        
+            // Insert newline after line
+            //textElement.innerHTML += '<br>';
+            //setTimeout(typeNext, 100);  
+          }
+        }
+		typeNextCharX();
+		
+		
+	}
+	}
+	
+	function changeTextWindow(text, windowIndex){
+	windowIndex = windowIndex !== undefined
+        ? windowIndex
+        : activeTextWindowIndex;
+		
+		if (windowIndex === -1){
+			windowIndex = createTextWindow();
+		}
+		
+		const targetWindow = windowIndex !== undefined
+        ? textWindows[windowIndex]
+        : textWindows[activeTextWindowIndex];
+		
+		console.log("active",activeTextWindowIndex)
+      if (targetWindow) {
+		appendText(text, targetWindow.querySelector('.inner-text'),windowIndex);
+        //targetWindow.querySelector('.inner-text').innerHTML = text;
+      }
+	};
+	
+    socket.on('changeText', (text,clear,windowIndex) => {
+		if (clear===true){
+				clearText();
+			}
+      changeTextWindow(text, windowIndex);
+    });
+
+    socket.on('clearText', windowIndex => {
+		console.log("cleeearrrrr11111111")
+      clearText(windowIndex);
+    });
+  </script>
+  
+</head>
+<body>
+    <div class="circle-container">
+        <div class="circle"></div>
+
+        <svg width="200" height="200">
+            <circle cx="100" cy="100" r="90" stroke="#fff" stroke-width="20" fill="transparent" />
+            <filter id="wavy">
+                <feTurbulence x="0" y="0" baseFrequency="0.02" numOctaves="5" seed="5">
+                    <animate
+                        attributeName="baseFrequency"
+                        dur="10s"
+                        values="1.00;0.4;0.2;.11;0.05;.03;0.02;0.010;0.0075;0.005;0.0035;0.002;0.001;0.002;0.005;0.010;0.020;0.1;0.2;0.4;1.00"
+                        repeatCount="indefinite"
+                    ></animate>
+                </feTurbulence>
+                <feDisplacementMap in="SourceGraphic" scale="30"></feDisplacementMap>
+            </filter>
+        </svg>
+    </div>
+
+    <div class="slider-container">
+        <label for="blur-slider" hidden=true >Blur:</label>
+        <input type="range" hidden=true id="blur-slider" min="0" max="5" step="0.1" value="1">
+        <label for="hue-slider" hidden=true>Hue Rotation:</label>
+        <input type="range" hidden=true id="hue-slider" min="0" max="360" step="1" value="0">
+        <label for="ring-size-slider" hidden=true >Ring Size:</label>
+        <input type="range" hidden=true id="ring-size-slider" min="50" max="300" step="1" value="90">
+        <label for="ring-thickness-slider" hidden=true >Ring Thickness:</label>
+        <input type="range" hidden=true id="ring-thickness-slider" min="10" max="50" step="1" value="20">
+        <label for="base-freq-slider" hidden=true >Base Frequency Multiplier:</label>
+        <input type="range" hidden=true id="base-freq-slider" min="0.01" max="0.1" step="0.01" value="0.02">
+    </div>
+	<div>
+        <button id="move-circle-button" hidden=true >Move Circle to Cursor</button>
+		<!-- Toggle button -->
+		<button id="dir-toggle" hidden=true>Toggle Direction</button>
+    </div>
+	
+	<div class="text-container" id="textContainer" >
+	  <div class="copy-box"  id="text-box">
+		<div class="inner">
+		  <div class="line">
+			<div class="scanner"></div> 
+		  </div>
+		  <div class="multi-text" id="text-content">
+			  <div class="inner-text" id="text-content" contenteditable style="spellcheck: false" spellcheck=false autocorrect="off" autocapitalize="off">
+			  I'm ready to listen :)<br>
+			Press Ctrl+Windows and start Talking
+			  </div>
+			<div>
+			  	<div class="text-container11" id="textContainer11" >
+				  <div class="copy-box11"  id="text-box11">
+					<div class="inner11">
+					  <div class="line11 ">
+						<div class="scanner11"></div> 
+					  </div>
+					  <div class="multi-text11" id="text-content11">
+						  <div class="inner-text" id="text-content11" contenteditable style="spellcheck: false" spellcheck=false autocorrect="off" autocapitalize="off">
+						  I'm ready to listen :)<br>
+						Press Ctrl+Windows and start Talking
+						  </div>
+						  <div class="pre">
+						  	  <pre>def hello():
+	print("world")</pre>
+						</div>
+						  <div class="inner-text" id="text-content11" contenteditable style="spellcheck: false" spellcheck=false autocorrect="off" autocapitalize="off">
+						  I'm ready to listen :)<br>
+						Press Ctrl+Windows and start Talking
+						  </div>
+						  </div>
+					  </div>
+					</div>					
+				</div>
+				
+				</div>
+			  <div class="inner-text" id="text-content" contenteditable style="spellcheck: false" spellcheck=false autocorrect="off" autocapitalize="off">
+			  I'm ready to listen :)<br>
+			Press Ctrl+Windows and start Talking
+			  </div>
+			    </div>
+			<div>
+			  	<div class="text-container11" id="textContainer11" >
+				  <div class="copy-box11"  id="text-box11">
+					<div class="inner11">
+					  <div class="line11 ">
+						<div class="scanner11"></div> 
+					  </div>
+					  <div class="multi-text11" id="text-content11">
+						  <div class="inner-text" id="text-content11" contenteditable style="spellcheck: false" spellcheck=false autocorrect="off" autocapitalize="off">
+						  I'm ready to listen :)<br>
+						Press Ctrl+Windows and start Talking
+						  </div>
+						  </div>
+					  </div>
+			 
+					</div>
+				</div>
+				</div>
+			  <div class="inner-text" id="text-content" contenteditable style="spellcheck: false" spellcheck=false autocorrect="off" autocapitalize="off">
+			  I'm ready to listen :)<br>
+			Press Ctrl+Windows and start Talking
+			  
+				<div class="text-container11" id="textContainer11" >
+				  <div class="copy-box11"  id="text-box11">
+					<div class="inner11">
+					  <div class="line11 ">
+						<div class="scanner11"></div> 
+					  </div>
+					  <div class="multi-text11" id="text-content11">
+						  <div class="inner-text" id="text-content11" contenteditable style="spellcheck: false" spellcheck=false autocorrect="off" autocapitalize="off">
+						  I'm ready to listen :)<br>
+						Press Ctrl+Windows and start Talking
+						  </div>
+						  </div>
+					  </div>
+			 
+					</div>
+				</div>
+		  </div>
+		</div>
+	  </div>
+	</div>
+	
+	
+	<div id="text-containers"></div>
+	
+    <script>
+        const blurSlider = document.getElementById('blur-slider');
+        const hueSlider = document.getElementById('hue-slider');
+        const ringSizeSlider = document.getElementById('ring-size-slider');
+        const ringThicknessSlider = document.getElementById('ring-thickness-slider');
+        const baseFreqSlider = document.getElementById('base-freq-slider');
+        const circle = document.querySelector('.circle');
+		
+	
+        let isDragging = false;
+        let offsetX, offsetY;
+		
+		let mousex, mousey;
+		
+		//let textIndex = 0;
+		//let textData = "";
+				
+		//Disables dragging if selecting the text
+		const innerText = document.querySelector('.inner-text');
+		innerText.addEventListener('mousedown', e => {
+		  e.stopPropagation(); 
+		});
+		
+		const textBox = document.getElementById('text-box');
+
+		// Function to handle blur event
+		function handleBlur() {
+			// Remove the "focused" class to revert to the original background color
+			textBox.classList.remove('focused');
+		}
+
+		// Add a click event listener to the text box
+		textBox.addEventListener('click', (event) => {
+			// Toggle the "focused" class to change the background color
+			textBox.classList.toggle('focused');
+			
+			// Prevent the click event from propagating to the document
+			event.stopPropagation();
+		});
+
+		// Add a blur event listener to the text box
+		textBox.addEventListener('blur', handleBlur);
+
+		// Add a beforeunload event listener to the window
+		window.addEventListener('beforeunload', () => {
+			// Ensure the color is normal when leaving the page
+			handleBlur();
+		});
+		
+		
+		
+		// Get the text element by id
+		const textElement = document.getElementById('text-content');
+		
+		
+		function convertTextToHtml(text) {
+			return text.replace(/\n/g, '<br>');
+		};
+		//function clearText(text) {
+		//	console.log("clearing11111111!!!!!!!!!")
+		//	textIndex=0
+		//	textData=""
+		//	textElement.innerHTML=""
+		//};
+		// Socket.IO event to change the text in the textbox
+		//socket.on('clearText', (xxx) => {
+		//	console.log("clearing!!!!!!!!!")
+		//	textIndex=0
+		//	textData=""
+		//	textElement.innerHTML=""
+		//});
+		/*
+		socket.on('changeText', (newText, clear) => {
+			// Set the received text in the textbox
+			//textElement.textContent = newText;
+			if (clear===true){
+				clearText()
+			}
+			
+			///const formattedText = convertTextToHtml(newText);
+			///textElement.innerHTML = formattedText;
+			//var lines = newText.split('\n');
+		  
+			// Type out each line
+			  appendText(newText);
+			});
+		
+		//PREV
+		*/
+		
+		//socket.on('incoming_text', function(text) {
+		//  // Split into lines
+		//  var lines = text.split('\n');
+		//  
+		//  // Type out each line
+		//  typeLines(text);
+		//});
+		
+	function appendTextXXX(text) {
+		console.log("ttt", text)
+		textData += text
+	
+	if (textData.length > textIndex) {
+		//console.log("TTTTT "+textData, textIndex)
+        function typeNextCharX() {
+		if (textData.length > textIndex){
+		  //console.log("xxx "+textData.length, textIndex)
+			
+			textElement.innerHTML += textData.charAt(textIndex).replace(/\n/g, '<br>');; 
+            textIndex++;
+            setTimeout(typeNextCharX, 50);
+          }
+          else {
+		  console.log("xxx "+textData.length, textIndex)
+        
+            // Insert newline after line
+            //textElement.innerHTML += '<br>';
+            //setTimeout(typeNext, 100);  
+          }
+        }
+		typeNextCharX();
+		
+		
+	}
+	}
+	/*
+    function typeLines(lines) {
+      var lineIndex = 0;
+
+      function typeNext() {
+        if (lineIndex < lines.length) {
+          var line = lines[lineIndex];
+          
+          // Type the line
+          typeLine(line); 
+          
+          lineIndex++;
+        }
+      }
+
+      function typeLine(line) {
+      
+        var index = 0;
+      
+        function typeNextChar() {
+          if (index < line.length) {
+            // Type next character
+            textElement.innerHTML += line.charAt(index); 
+            index++;
+            setTimeout(typeNextChar, 50);
+          }
+          else {
+            // Insert newline after line
+            //textElement.innerHTML += '<br>';
+            setTimeout(typeNext, 100);  
+          }
+        }
+        
+        typeNextChar();
+      }
+      
+      typeNext(); 
+    }*/
+	
+	
+	
+	
+	
+	
+	
+		
+		
+		// Socket.IO event to trigger LTR direction
+		socket.on('setDirectionLTR', () => {
+			// Set text direction to LTR
+			textBox.dir = 'ltr';
+			textElement.dir = 'ltr'
+		});
+
+		// Socket.IO event to trigger RTL direction
+		socket.on('setDirectionRTL', () => {
+			// Set text direction to RTL
+			textBox.dir = 'rtl';
+			textElement.dir = 'rtl'
+		});
+		
+
+		// Get the toggle button by id
+		const dirToggle = document.getElementById('dir-toggle');
+
+		// Add a click event listener to the button
+		dirToggle.addEventListener('click', () => {
+			// Toggle text direction between LTR and RTL
+			if (textElement.dir === 'rtl') {
+				textElement.dir = 'ltr';
+			}
+			else if(textElement.dir === 'ltr') {
+				textElement.dir = 'rtl';
+			}
+			else if(textElement.dir != 'ltr') {
+				textElement.dir = 'rtl';
+			} else {
+				textElement.dir = 'ltr';
+			}
+		});
+		
+        document.addEventListener('mousedown', (e) => {
+            if (e.target === circle) {
+                isDragging = true;
+                offsetX = e.clientX - circle.getBoundingClientRect().left;
+                offsetY = e.clientY - circle.getBoundingClientRect().top;
+                circle.style.cursor = 'grabbing';
+            }
+        });
+		let circleIsDragging = false;
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const x = e.clientX - offsetX;
+                const y = e.clientY - offsetY;
+                circle.style.left = `${x}px`;
+                circle.style.top = `${y}px`;
+				  circleIsDragging = true; 
+
+            }
+			else
+			{
+				  circleIsDragging = false; 
+
+			}
+			mousex = e.clientX
+			mousey = e.clientY
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            circle.style.cursor = 'pointer';
+        });
+		
+		let isCircleDrag = false;
+		let circleMoved = false;
+circle.addEventListener('mousemove', (e) => {
+	if (isCircleDrag){
+	circleMoved=true;
+				console.log("cicle moved")
+
+	}
+
+});
+        
+		// Update on mouse down
+		circle.addEventListener('mousedown', () => {
+		  isCircleDrag = true;
+		});
+
+		// Update on mouse up
+		circle.addEventListener('mouseup', () => {
+		  isCircleDrag = false;
+		});
+		
+		
+		
+		circle.addEventListener('click', () => {
+		console.log("C CLICK 0")
+	if (!circleIsDragging) {
+console.log("C CLICK 1", isCircleDrag, circleMoved, circleIsDragging)
+		  if (textWindows.length === 0) {
+			// No windows open, create one
+			createTextWindow(); 
+		  }
+
+		  // Toggle visible class
+		  circle.classList.toggle('windows-visible');
+
+		  // Update window visibility
+		  textWindows.forEach(window => {
+			//window.style.visibility = circle.classList.contains('windows-visible')
+			if (!circle.classList.contains('windows-visible')){
+			
+			 // ? 'visible' : 'hidden'; 
+			  window.style.opacity = 0;
+			}
+			else{
+				console.log("SHOOOOOOOOOWWWWWWWWW")
+				window.style.opacity = 0.8;
+			}			
+			  // change opacity instead
+		  });
+	}
+	else{
+	//console.log("C CLICK 2", isCircleDrag, circleMoved, circleIsDragging)
+	}
+	//circleMoved=false; 	
+	});
+
+        blurSlider.addEventListener('input', updateFilters);
+        hueSlider.addEventListener('input', updateFilters);
+        ringSizeSlider.addEventListener('input', updateFilters);
+        ringThicknessSlider.addEventListener('input', updateFilters);
+        baseFreqSlider.addEventListener('input', updateFilters);
+
+        function updateFilters() {
+            const blurValue = blurSlider.value;
+            const hueValue = hueSlider.value;
+            const ringSize = ringSizeSlider.value;
+            const ringThickness = ringThicknessSlider.value;
+            const baseFreqMultiplier = baseFreqSlider.value;
+
+            //circle.style.filter = `url(#wavy) blur(${blurValue}px) hue-rotate(${hueValue}deg)`;
+            circle.style.width = `${ringSize}px`;
+            circle.style.height = `${ringSize}px`;
+            circle.querySelector('::before').style.borderWidth = `${ringThickness}px`;
+            circle.querySelector('::before').style.width = `calc(100% - ${2 * ringThickness}px)`;
+            circle.querySelector('::before').style.height = `calc(100% - ${2 * ringThickness}px)`;
+            document.querySelector('#wavy feTurbulence').setAttribute('baseFrequency', baseFreqMultiplier);
+        }
+		
+		let duration = 1;
+		// Function to move the circle to the specified coordinates
+		// Function to move the circle to the specified coordinates
+		function moveCircleToCoordinates(x, y, speed, slowdown) {
+			const circleRect = circle.getBoundingClientRect();
+            const circleCenterX = circleRect.left + circleRect.width / 2;
+            const circleCenterY = circleRect.top + circleRect.height / 2;
+            const cursorX = x; // Initialize cursorX outside the circle
+            const cursorY = y; // Initialize cursorY outside the circle
+
+			fx = x - circleRect.width / 2
+			fy = y - circleRect.height / 2
+			
+            // Calculate the distance between the circle center and cursor
+            const distanceX = fx - circleRect.left;
+            const distanceY = fy - circleRect.top;
+
+            //const speed = 200; // Adjust this value for the desired speed
+            //const duration = Math.sqrt(distanceX ** 2 + distanceY ** 2) / speed;
+			
+            duration = 200/speed;
+
+            circle.style.transition = `transform ${duration}s ease-in-out ,width ${duration-0.3}s, height ${duration-0.3}s, filter 0.5s`;
+
+            // Apply the transform to move the circle to the cursor location
+            circle.style.transform = `translate(${distanceX}px, ${distanceY}px)`;
+			
+			
+			
+            // Reset the transition after the movement is complete
+            setTimeout(() => {
+                circle.style.transition = 'width 0.5s, height 0.5s, filter 0.5s';
+				circle.style.transform = ''
+				circle.style.left = `${fx}px`;
+                circle.style.top = `${fy}px`;
+            }, duration * 1000);
+        }
+
+        // Listen for button click
+        document.getElementById("move-circle-button").addEventListener("click", () => {
+			// Set the desired coordinates and motion parameters
+			const x = 200;
+			const y = 300;
+			const speed = 150;
+			const slowdown = 0.5;
+
+			// Call the moveCircleToCoordinates function with the specified values
+			//moveCircleToCoordinates(x, y, speed, slowdown);
+			//setTimeout(() => {
+            //    moveCircleToCoordinates(x*2, y, speed, slowdown);
+            //}, 5000);
+			// Wait for 2 seconds
+			setTimeout(() => {
+				//alert("yo yo")
+				//alert(`${mousex},${mousey}`)
+				
+				// Get the cursor location
+				const x = mousex;
+				const y = mousey;
+				//alert(`${x},${y}`)
+				const speed = 150;
+				const slowdown = 0.5;
+
+				// Call the moveCircleToCoordinates function with the specified values
+				moveCircleToCoordinates(x, y, speed, slowdown);
+			}, 2000); // Wait for 2 seconds (2000 milliseconds) before executing the code
+			
+		});
+		
+		socket.on('cursorCoordinates', (data) => {
+			const { x, y } = data;
+			const speed = 150;
+			const slowdown = 0.5;
+			moveCircleToCoordinates(x, y, speed, slowdown);
+		});
+		//socket.on('ringSize', (size) => {
+		//	// Apply the received ring size to the circle
+		//	document.querySelector('.circle').style.width = `${size}px`;
+		//	document.querySelector('.circle').style.height = `${size}px`;
+		//});
+		//
+		//socket.on('blurValue', (blur) => {
+		//	// Apply the received blur value to the circle
+		//	document.querySelector('.circle').style.filter = `url(#wavy) blur(${blur}px) hue-rotate(${hueSlider.value}deg)`;
+		//});
+		socket.on('ringSize', (size, recenter) => {
+    // Calculate the current circle center position
+    const circle = document.querySelector('.circle');
+    const centerX = circle.getBoundingClientRect().left + circle.offsetWidth / 2;
+    const centerY = circle.getBoundingClientRect().top + circle.offsetHeight / 2;
+
+    // Calculate the new circle position after resizing to keep it centered
+    const newLeft = centerX - size / 2;
+    const newTop = centerY - size / 2;
+
+    // Apply the received ring size to the circle with a smooth transition
+	if (recenter){
+		circle.style.transition = `left 0.5s, top 0.5s, transform ${duration}s ease-in-out ,width 0.5s, height 0.5s, filter 0.5s`;
+	}else{
+		circle.style.transition = `left 0.5s, top 0.5s, transform ${duration}s ease-in-out ,width ${duration-0.3}s, height ${duration-0.3}s, filter 0.5s`;
+	}
+    //circle.style.transition = 'left 0.5s, top 0.5s, width 0.5s, height 0.5s, filter 0.5s'; // Adjust the duration as needed
+    //circle.style.transition = `left 0.5s, top 0.5s, transform ${duration}s ease-in-out ,width ${duration-0.3}s, height ${duration-0.3}s, filter 0.5s`;
+	circle.style.width = `${size}px`;
+    circle.style.height = `${size}px`;
+	if (recenter){
+		circle.style.left = `${newLeft}px`;
+		circle.style.top = `${newTop}px`;
+	}
+    // Remove the transition after it's completed
+    setTimeout(() => {
+		circle.style.transition = `transform ${duration}s ease-in-out ,width ${duration-0.3}s, height ${duration-0.3}s, filter 0.5s`;
+
+        //circle.style.transition = 'width 0.5s, height 0.5s, filter 0.5s';
+    }, 500); // Adjust the duration to match the transition duration above
+});
+
+
+		socket.on('blurValue', (blur) => {
+			// Apply the received blur value to the circle with a smooth transition
+			const circle = document.querySelector('.circle');
+			//circle.style.transition = 'filter 0.5s'; // Adjust the duration as needed
+			circle.style.filter = `url(#wavy) blur(${blur}px) hue-rotate(${hueSlider.value}deg)`;
+			// Remove the transition after it's completed
+			//setTimeout(() => {
+			//	//circle.style.transition = '';
+			//}, 500); // Adjust the duration to match the transition duration above
+		});
+		
+	
+		const textContainer = document.querySelector('.text-container');
+		const innerT = document.querySelector('.inner-text');
+
+		let textIsDragging = false;
+		let textIsSelecting = false;
+
+		let textOffsetX, textOffsetY;
+		
+		
+		innerT.addEventListener('mousedown', e => {
+		  textIsSelecting = true;
+		  console.log("TTTTTTT")
+		  //textOffsetX = e.clientX - textContainer.getBoundingClientRect().left;
+		  //textOffsetY = e.clientY - textContainer.getBoundingClientRect().top;
+		  //textContainer.classList.add('dragging'); 
+		});
+		
+		textContainer.addEventListener('mousedown', e => {
+		  textIsDragging = true;
+		  textOffsetX = e.clientX - textContainer.getBoundingClientRect().left;
+		  textOffsetY = e.clientY - textContainer.getBoundingClientRect().top;
+		  textContainer.classList.add('dragging'); 
+		});
+		
+		textContainer.addEventListener('mouseup', () => {
+        textIsDragging = false;
+		textIsSelecting = false;
+        textContainer.classList.remove('dragging');
+        textContainer.style.opacity = 0.8;
+      });
+		
+		// Add a focus event listener to the text container
+		textContainer.addEventListener('focus', () => {
+			// Add the "focused" class to make the background brighter
+			textContainer.classList.add('focused');
+			alert("on")
+		});
+
+		// Add a blur event listener to the text container (optional)
+		textContainer.addEventListener('blur', () => {
+			// Remove the "focused" class when the container loses focus
+			textContainer.classList.remove('focused');
+			alert("off")
+		});
+		
+		document.addEventListener('focus', e => {
+			textContainer.style.opacity = 0.5;
+		});
+		document.addEventListener('blur', e => {
+		  textContainer.style.opacity = 0.8;  
+		});
+		
+
+		document.addEventListener('mousemove', e => {
+			console
+		  if (textIsDragging & !textIsSelecting) {
+			const x = e.clientX - textOffsetX;
+			const y = e.clientY - textOffsetY;
+			textContainer.style.left = `${x}px`;
+			textContainer.style.top = `${y}px`;
+			textContainer.style.opacity = 0.3;
+		  }  
+		});
+
+		document.addEventListener('mouseup', () => {
+		  textIsDragging = false; 
+		  textIsSelecting = false;
+		  textContainer.classList.remove('dragging');
+		//textContainer.style.opacity = 0.8; 
+		console.log("0.8")
+		});
+		
+
+
+	// multi windows
+	// Create 3 windows on load
+	/*
+    const numWindows = 3;
+    for (let i = 0; i < numWindows; i++) {
+	
+		// Add 2 second delay between each
+  
+  setTimeout(() => {  
+    const index = createTextWindow();
+      
+      // Position each one
+      const x = 100 + i * 100; 
+      const y = 100 + i * 100;
+      textWindows[index].style.left = `${x}px`;
+      textWindows[index].style.top = `${y}px`;
+      
+      // Set unique text
+	  changeTextWindow(`Window ${index} Opened`, index);
+    // Position and initialize 
+  }, i * 100); 
+      
+    }*/
+	
+
+
+
+    </script>
+	<div id="terminal" hidden=true></div>
+      <script>
+        var term = new Terminal();
+        term.open(document.getElementById('terminal'));
+        term.write('```python\n\nimport hello\n```')
+		
+      </script>
+	 
+
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+	 
+
+	 <script>
+		var preTags = document.getElementsByTagName('pre');
+		var size = preTags.length;
+		for (var i=0; i < size; i++) { 
+			preTags[i].innerHTML = '<code>'+preTags[i].innerHTML+'</code>'; // wrap content of pre tag in code tag
+		}
+		hljs.highlightAll(  ); // apply highlighting
+	 </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Typewriter Effect</title>
+</head>
+<body>
+
+<textarea id="typing-area" rows="10" cols="50"></textarea>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script>
+  var socket = io.connect("http://127.0.0.1:5000"); // Connect to the Socket.IO server
+
+  var typingArea = document.getElementById('typing-area');
+
+  socket.on('connect', function() {
+    console.log('Connected to server');
+  });
+
+  socket.on('incoming_text', function(text) {
+    var lines = text.split('\n');
+    console.log(text)
+	typeLines(lines); 
+  });
+
+  function typeLines(lines) {
+    var lineIndex = 0;
+
+    function typeNext() {
+      if (lineIndex < lines.length) {
+        var line = lines[lineIndex];
+        typeLine(line);
+        lineIndex++;
+      }
+    }
+
+    function typeLine(line) {
+      var index = 0;
+
+      function typeNextChar() {
+        if (index < line.length) {
+          typingArea.value += line.charAt(index);
+          index++;
+          setTimeout(typeNextChar, 50); 
+        } else {
+          typingArea.value += '\n';
+          setTimeout(typeNext, 100);
+        }
+      }
+
+      typeNextChar();
+    }
+
+    typeNext();
+  }
+</script>
+
+</body>
+</html>
